@@ -21,6 +21,9 @@ use Automattic\WooCommerce\GoogleListingsAndAds\API\Site\RESTControllers;
 use Automattic\WooCommerce\GoogleListingsAndAds\Assets\AssetsHandler;
 use Automattic\WooCommerce\GoogleListingsAndAds\Assets\AssetsHandlerInterface;
 use Automattic\WooCommerce\GoogleListingsAndAds\ConnectionTest;
+use Automattic\WooCommerce\GoogleListingsAndAds\Coupon\CouponHelper;
+use Automattic\WooCommerce\GoogleListingsAndAds\Coupon\CouponMetaHandler;
+use Automattic\WooCommerce\GoogleListingsAndAds\Coupon\CouponSyncer;
 use Automattic\WooCommerce\GoogleListingsAndAds\Google\GoogleProductService;
 use Automattic\WooCommerce\GoogleListingsAndAds\Google\GlobalSiteTag;
 use Automattic\WooCommerce\GoogleListingsAndAds\Google\SiteVerificationMeta;
@@ -97,6 +100,9 @@ class CoreServiceProvider extends AbstractServiceProvider {
 		AssetsHandlerInterface::class => true,
 		CompleteSetup::class          => true,
 		CompleteSetupNote::class      => true,
+	    CouponHelper::class           => true,
+	    CouponMetaHandler::class      => true,
+	    CouponSyncer::class           => true, 
 		Dashboard::class              => true,
 		EventTracking::class          => true,
 		GetStarted::class             => true,
@@ -245,6 +251,22 @@ class CoreServiceProvider extends AbstractServiceProvider {
 			ProductHelper::class,
 			MerchantCenterService::class,
 			WC::class
+		);
+		
+		// Coupon management classes
+		$this->share_with_tags( CouponMetaHandler::class );
+		$this->share_with_tags(
+		    CouponHelper::class,
+		    CouponMetaHandler::class,
+		    WC::class,
+		    MerchantCenterService::class
+		);
+		$this->share_with_tags(
+		    CouponSyncer::class,
+		    GoogleProductService::class,
+		    CouponHelper::class,
+		    MerchantCenterService::class,
+		    WC::class
 		);
 
 		// Set up inflector for tracks classes.
