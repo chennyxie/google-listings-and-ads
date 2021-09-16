@@ -25,6 +25,7 @@ use Automattic\WooCommerce\GoogleListingsAndAds\Coupon\CouponHelper;
 use Automattic\WooCommerce\GoogleListingsAndAds\Coupon\CouponMetaHandler;
 use Automattic\WooCommerce\GoogleListingsAndAds\Coupon\CouponSyncer;
 use Automattic\WooCommerce\GoogleListingsAndAds\Google\GoogleProductService;
+use Automattic\WooCommerce\GoogleListingsAndAds\Google\GooglePromotionService;
 use Automattic\WooCommerce\GoogleListingsAndAds\Google\GlobalSiteTag;
 use Automattic\WooCommerce\GoogleListingsAndAds\Google\SiteVerificationMeta;
 use Automattic\WooCommerce\GoogleListingsAndAds\Infrastructure\Service;
@@ -263,8 +264,9 @@ class CoreServiceProvider extends AbstractServiceProvider {
 		);
 		$this->share_with_tags(
 		    CouponSyncer::class,
-		    GoogleProductService::class,
+		    GooglePromotionService::class,
 		    CouponHelper::class,
+		    ValidatorInterface::class,
 		    MerchantCenterService::class,
 		    WC::class
 		);
