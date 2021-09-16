@@ -36,7 +36,7 @@ const AppButton = ( props ) => {
 		loading,
 		eventName,
 		eventProps,
-		children,
+		text: passedInText,
 		onClick = () => {},
 		...rest
 	} = props;
@@ -49,16 +49,37 @@ const AppButton = ( props ) => {
 		onClick( ...args );
 	};
 
+	const classes = [ 'app-button', className ];
+	let text;
+
+	if ( loading ) {
+		text = <Spinner />;
+	}
+
+	if ( passedInText ) {
+		text = (
+			<>
+				{ loading && <Spinner /> }
+				{ passedInText }
+			</>
+		);
+
+		if ( rest.icon ) {
+			classes.push( 'app-button--icon-with-text' );
+		}
+		if ( rest.iconPosition === 'right' ) {
+			classes.push( 'app-button--icon-position-right' );
+		}
+	}
+
 	return (
 		<Button
-			className={ classnames( 'app-button', className ) }
+			className={ classnames( ...classes ) }
 			disabled={ disabled || loading }
+			text={ text }
 			onClick={ handleClick }
 			{ ...rest }
-		>
-			{ loading && <Spinner /> }
-			{ children }
-		</Button>
+		/>
 	);
 };
 
