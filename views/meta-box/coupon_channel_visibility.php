@@ -8,31 +8,35 @@ use Automattic\WooCommerce\GoogleListingsAndAds\View\PHPView;
 defined('ABSPATH') || exit();
 
 /**
- *
  * @var PHPView $this
  */
 
 /**
- *
  * @var int $coupon_id
  */
-$coupon_id = $this->coupons_id;
+$coupon_id = $this->coupon_id;
+
 /**
- *
- * @var WC_Coupon $product
+ * @var WC_Coupon $coupon
  */
 $coupon = $this->coupon;
 
 $channel_visibility = $this->channel_visibility;
 
 /**
- *
  * @var string
  */
 $field_id = $this->field_id;
 
 /**
- *
+<<<<<<< HEAD
+ * @var bool
+ */
+$is_setup_complete = $this->is_setup_complete;
+
+/**
+=======
+>>>>>>> d4ad8b22... fix visibility box injection
  * @var string $sync_status
  */
 if (SyncStatus::HAS_ERRORS === $this->sync_status) {
@@ -44,7 +48,6 @@ $show_status = $channel_visibility === ChannelVisibility::SYNC_AND_SHOW &&
     $this->sync_status !== SyncStatus::SYNCED;
 
 /**
- *
  * @var array $issues
  */
 $issues = $this->issues;
@@ -52,7 +55,7 @@ $has_issues = ! empty($issues);
 
 $input_description = '';
 $input_disabled = false;
-if ($coupon->get_virtual() || (! CouponSyncer::is_coupon_supported($coupon))) {
+if (! $this->is_coupon_supported) {
     $channel_visibility = ChannelVisibility::DONT_SYNC_AND_SHOW;
     $show_status = false;
     $input_disabled = true;
@@ -68,42 +71,50 @@ if ($input_disabled) {
 ?>
 
 <div class="gla-channel-visibility-box">
-<?php
-woocommerce_wp_select(
-    [
-        'id' => $field_id,
-        'value' => $channel_visibility,
-        'label' => __('Google Listing & Ads', 'google-listings-and-ads'),
-        'description' => $input_description,
-        'desc_tip' => false,
-        'options' => [
-            ChannelVisibility::SYNC_AND_SHOW => __('Show coupon on Google',
-                'google-listings-and-ads'),
-            ChannelVisibility::DONT_SYNC_AND_SHOW => __(
-                'Don\'t show coupn on Google', 'google-listings-and-ads')
-        ],
-        'custom_attributes' => $custom_attributes
-    ]);
-?>
-	<?php if ( $show_status ) : ?>
-	<div class="sync-status notice-alt notice-large notice-warning"
-		style="border-left-style: solid">
-		<p>
-			<strong><?php esc_html_e( 'Google sync status', 'google-listings-and-ads' ); ?></strong>
-		</p>
-		<p><?php echo esc_html( $sync_status ); ?></p>
-		<?php if ( $has_issues ) : ?>
-			<div class="gla-product-issues">
-			<p>
-				<strong><?php esc_html_e( 'Issues', 'google-listings-and-ads' ); ?></strong>
-			</p>
-			<ul>
-					<?php foreach ( $issues as $issue ) : ?>
-					<li><?php echo esc_html( $issue ); ?></li>
-					<?php endforeach; ?>
-				</ul>
-		</div>
-		<?php endif; ?>
-	</div>
+	<?php if ( $is_setup_complete ) : ?>
+        <?php
+        woocommerce_wp_select(
+            [
+                'id' => $field_id,
+                'value' => $channel_visibility,
+                'label' => __('Google Listing & Ads', 'google-listings-and-ads'),
+                'description' => $input_description,
+                'desc_tip' => false,
+                'options' => [
+                    ChannelVisibility::SYNC_AND_SHOW => __('Show coupon on Google',
+                        'google-listings-and-ads'),
+                    ChannelVisibility::DONT_SYNC_AND_SHOW => __(
+                        'Don\'t show coupn on Google', 'google-listings-and-ads')
+                ],
+                'custom_attributes' => $custom_attributes,
+                'wrapper_class'     => 'form-row form-row-full',
+            ]);
+        ?>
+    	<?php if ( $show_status ) : ?>
+    	<div class="sync-status notice-alt notice-large notice-warning"
+    		style="border-left-style: solid">
+    		<p>
+    			<strong><?php esc_html_e( 'Google sync status', 'google-listings-and-ads' ); ?></strong>
+    		</p>
+    		<p><?php echo esc_html( $sync_status ); ?></p>
+    		<?php if ( $has_issues ) : ?>
+    			<div class="gla-product-issues">
+    			<p>
+    				<strong><?php esc_html_e( 'Issues', 'google-listings-and-ads' ); ?></strong>
+    			</p>
+    			<ul>
+    					<?php foreach ( $issues as $issue ) : ?>
+    					<li><?php echo esc_html( $issue ); ?></li>
+    					<?php endforeach; ?>
+    				</ul>
+    		</div>
+    		<?php endif; ?>
+    	</div>
+    	<?php endif; ?>
+	<?php else : ?>
+		<p><strong><?php esc_html_e( 'Google Listings & Ads', 'google-listings-and-ads' ); ?></strong></p>
+		<p><?php esc_html_e( 'Complete setup to get your coupon listed on Google for free.', 'google-listings-and-ads' ); ?></p>
+		<a href="<?php echo esc_attr( $get_started_url ); ?>"
+		   class="button"><?php esc_html_e( 'Complete setup', 'google-listings-and-ads' ); ?></a>
 	<?php endif; ?>
 </div>

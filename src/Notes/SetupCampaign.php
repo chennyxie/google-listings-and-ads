@@ -35,6 +35,8 @@ class SetupCampaign extends Note implements AdsAwareInterface {
 	 * Possibly add the note
 	 */
 	public function possibly_add_note(): void {
+	    // Disable notes for local test
+	    return ;
 		if ( ! $this->can_add_note() ) {
 			return;
 		}

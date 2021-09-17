@@ -8,6 +8,7 @@ use Automattic\WooCommerce\GoogleListingsAndAds\Exception\InvalidValue;
 use Automattic\WooCommerce\GoogleListingsAndAds\Coupon\CouponHelper;
 use Automattic\WooCommerce\GoogleListingsAndAds\Coupon\CouponMetaHandler;
 use Automattic\WooCommerce\GoogleListingsAndAds\Coupon\CouponSyncer;
+use Automattic\WooCommerce\GoogleListingsAndAds\MerchantCenter\MerchantCenterService;
 use Automattic\WooCommerce\GoogleListingsAndAds\Value\ChannelVisibility;
 use WC_Coupon;
 use WP_Post;
@@ -32,15 +33,22 @@ class CouponChannelVisibilityMetaBox extends SubmittableMetaBox {
 	protected $coupon_helper;
 
 	/**
+	 * @var MerchantCenterService
+	 */
+	protected $merchant_center;
+	
+	/**
 	 * CouponChannelVisibilityMetaBox constructor.
 	 *
 	 * @param Admin              $admin
 	 * @param CouponMetaHandler $meta_handler
 	 * @param CouponHelper      $coupon_helper
+	 * @param MerchantCenterService $merchant_center
 	 */
-	public function __construct( Admin $admin, CouponMetaHandler $meta_handler, CouponHelper $coupon_helper ) {
+	public function __construct( Admin $admin, CouponMetaHandler $meta_handler, CouponHelper $coupon_helper, MerchantCenterService $merchant_center ) {
 		$this->meta_handler   = $meta_handler;
 		$this->coupon_helper = $coupon_helper;
+		$this->merchant_center = $merchant_center;
 		parent::__construct( $admin );
 	}
 
@@ -120,6 +128,7 @@ class CouponChannelVisibilityMetaBox extends SubmittableMetaBox {
 	protected function get_view_context( WP_Post $post, array $args ): array {
 		$coupon_id = absint( $post->ID );
 		$coupon    = $this->coupon_helper->get_wc_coupon( $coupon_id );
+		$is_coupon_supported = $coupon->get_virtual() || (! CouponSyncer::is_coupon_supported($coupon));
 
 		return [
 			'field_id'           => $this->get_visibility_field_id(),
@@ -128,6 +137,9 @@ class CouponChannelVisibilityMetaBox extends SubmittableMetaBox {
 			'channel_visibility' => $this->coupon_helper->get_channel_visibility( $coupon ),
 			'sync_status'        => $this->meta_handler->get_sync_status( $coupon ),
 			'issues'             => $this->coupon_helper->get_validation_errors( $coupon ),
+		    'is_coupon_supported'=> $is_coupon_supported,
+		    'is_setup_complete'  => $this->merchant_center->is_setup_complete(),
+		    'get_started_url'    => $this->get_start_url(),
 		];
 	}
 
