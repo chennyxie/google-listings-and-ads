@@ -29,14 +29,11 @@ $channel_visibility = $this->channel_visibility;
 $field_id = $this->field_id;
 
 /**
-<<<<<<< HEAD
  * @var bool
  */
 $is_setup_complete = $this->is_setup_complete;
 
 /**
-=======
->>>>>>> d4ad8b22... fix visibility box injection
  * @var string $sync_status
  */
 if (SyncStatus::HAS_ERRORS === $this->sync_status) {
